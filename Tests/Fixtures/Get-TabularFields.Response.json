@@ -1,0 +1,43 @@
+[
+    {
+        "alias": "jobInfo",
+        "fields": [
+            {
+                "id": 4028,
+                "name": "Job Information: Date",
+                "alias": "date",
+                "type": "date"
+            },
+            {
+                "id": 18,
+                "name": "Location",
+                "alias": "location",
+                "type": "list"
+            },
+            {
+                "id": 4,
+                "name": "Department",
+                "alias": "department",
+                "type": "list"
+            },
+            {
+                "id": 1355,
+                "name": "Division",
+                "alias": "division",
+                "type": "list"
+            },
+            {
+                "id": 17,
+                "name": "Job Title",
+                "alias": "jobTitle",
+                "type": "list"
+            },
+            {
+                "id": 91,
+                "name": "Reporting to",
+                "alias": "reportsTo",
+                "type": "employee"
+            }
+        ]
+    }
+]
