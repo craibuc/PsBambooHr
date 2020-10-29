@@ -1,0 +1,171 @@
+# /PsBambooHr
+$ProjectDirectory = Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent
+
+# /PsBambooHr/PsBambooHr/Public
+$PublicPath = Join-Path $ProjectDirectory "/PsBambooHr/Public/"
+
+# /PsBambooHr/Tests/Fixtures/
+$FixturesDirectory = Join-Path $ProjectDirectory "/Tests/Fixtures/"
+
+# Get-BambooHrField.ps1
+$sut = (Split-Path -Leaf $MyInvocation.MyCommand.Path) -replace '\.Tests\.', '.'
+
+# . /PsBambooHr/PsBambooHr/Public/Get-BambooHrField.ps1
+$Path = Join-Path $PublicPath $sut
+Write-Debug "Path: $Path"
+
+. (Join-Path $PublicPath $sut)
+
+Describe "Get-BambooHrField" -Tag 'unit' {
+
+    Context "Parameter validation" {
+
+        BeforeAll {
+            $Command = Get-Command 'Get-BambooHrField'
+        } 
+
+        $Parameters = @(
+            @{ParameterName='ApiKey';Type=[string]; Mandatory=$true}
+            @{ParameterName='Subdomain';Type=[string]; Mandatory=$true}
+            @{ParameterName='Detailed';Type=[switch]; Mandatory=$false}
+        )
+
+        Context "Type" {
+            It '<ParameterName> mandatory is a <Type>' -TestCases $Parameters {
+                param($ParameterName, $Type)
+                $Command | Should -HaveParameter $ParameterName -Type $Type
+            }    
+        }
+
+        Context "Mandatory" {
+            it '<ParameterName> mandatory is <Mandatory>' -TestCases $Parameters {
+                param($ParameterName, $Type, $Mandatory)
+              
+                if ($Mandatory) { $Command | Should -HaveParameter $ParameterName -Mandatory }
+                else { $Command | Should -HaveParameter $ParameterName -Not -Mandatory }
+            }    
+        }
+
+    } # /Context
+
+    Context "Default parameters" {
+
+        BeforeAll {
+            # arrange
+            $ApiKey = '2134d8d5-d1b4-4a1d-89ac-f44a96514bb5'
+            $Password = ConvertTo-SecureString 'Password' -AsPlainText -Force
+
+            $Subdomain = 'subdomain'
+
+            Mock Invoke-WebRequest {
+                $Fixture = 'Get-Fields.Response.json'
+                $Content = Get-Content (Join-Path $FixturesDirectory $Fixture) -Raw
+
+                $Response = New-MockObject -Type  Microsoft.PowerShell.Commands.BasicHtmlWebResponseObject
+                $Response | Add-Member -Type NoteProperty -Name 'Content' -Value $Content -Force
+                $Response
+            }
+
+        }
+
+        BeforeEach {
+            # act
+            Get-BambooHrField -ApiKey $ApiKey -Subdomain $Subdomain
+        }
+
+        Context "Request" {
+
+            It "uses the correct Uri" {
+                # assert
+                Assert-MockCalled Invoke-WebRequest -ParameterFilter { 
+                    $Uri -eq "https://api.bamboohr.com/api/gateway.php/$Subdomain/v1/meta/fields/" 
+                }
+            }
+    
+            It "uses the correct Method" {    
+                # assert
+                Assert-MockCalled Invoke-WebRequest -ParameterFilter { $Method -eq 'Get' }
+            }
+        
+            It "uses the correct Accept" {
+                # assert
+                Assert-MockCalled Invoke-WebRequest -ParameterFilter { $Headers.Accept -eq 'application/json' }
+            }
+    
+            It "uses the correct Credential" {
+                # arrange
+                $BasicCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $ApiKey, $Password
+
+                # assert
+                Assert-MockCalled Invoke-WebRequest -ParameterFilter { 
+                    $Credential.UserName -eq $BasicCredential.UserName -and
+                    ($Credential.Password | ConvertFrom-SecureString -AsPlainText) -eq ($BasicCredential.Password | ConvertFrom-SecureString -AsPlainText) -and
+                    $UseBasicParsing -eq $true
+                }
+            }
+
+        } # /Context
+
+    } # /Context
+
+    Context "Detailed" {
+
+        BeforeAll {
+            # arrange
+            $ApiKey = '2134d8d5-d1b4-4a1d-89ac-f44a96514bb5'
+            $Password = ConvertTo-SecureString 'Password' -AsPlainText -Force
+
+            $Subdomain = 'subdomain'
+
+            Mock Invoke-WebRequest {
+                $Fixture = 'Get-Lists.Response.json'
+                $Content = Get-Content (Join-Path $FixturesDirectory $Fixture) -Raw
+
+                $Response = New-MockObject -Type  Microsoft.PowerShell.Commands.BasicHtmlWebResponseObject
+                $Response | Add-Member -Type NoteProperty -Name 'Content' -Value $Content -Force
+                $Response
+            }
+
+        }
+
+        BeforeEach {
+            # act
+            Get-BambooHrField -ApiKey $ApiKey -Subdomain $Subdomain -Detailed
+        }
+
+        Context "Request" {
+
+            It "uses the correct Uri" {
+                # assert
+                Assert-MockCalled Invoke-WebRequest -ParameterFilter { 
+                    $Uri -eq "https://api.bamboohr.com/api/gateway.php/$Subdomain/v1/meta/lists/" 
+                }
+            }
+    
+            It "uses the correct Method" {    
+                # assert
+                Assert-MockCalled Invoke-WebRequest -ParameterFilter { $Method -eq 'Get' }
+            }
+        
+            It "uses the correct Accept" {
+                # assert
+                Assert-MockCalled Invoke-WebRequest -ParameterFilter { $Headers.Accept -eq 'application/json' }
+            }
+    
+            It "uses the correct Credential" {
+                # arrange
+                $BasicCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $ApiKey, $Password
+
+                # assert
+                Assert-MockCalled Invoke-WebRequest -ParameterFilter { 
+                    $Credential.UserName -eq $BasicCredential.UserName -and
+                    ($Credential.Password | ConvertFrom-SecureString -AsPlainText) -eq ($BasicCredential.Password | ConvertFrom-SecureString -AsPlainText) -and
+                    $UseBasicParsing -eq $true
+                }
+            }
+
+        } # /Context
+
+    } # /Context
+
+} # /Describe

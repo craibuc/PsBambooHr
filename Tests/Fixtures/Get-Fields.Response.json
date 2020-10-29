@@ -1,0 +1,19 @@
+[
+    {
+        "id": 1,
+        "name": "First name",
+        "type": "text",
+        "alias": "firstName"
+    },
+    {
+        "id": 2,
+        "name": "Last name",
+        "type": "text",
+        "alias": "lastName"
+    },
+    {
+        "id": 3,
+        "name": "My custom list",
+        "type": "list"
+    }
+]
