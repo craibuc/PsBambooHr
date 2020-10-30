@@ -1,0 +1,28 @@
+[
+    {
+        "id": "13",
+        "employeeId": "1",
+        "date": "2014-04-01",
+        "employmentStatus": "Full-Time",
+        "comment": null,
+        "terminationReasonId": "",
+        "terminationTypeId": "",
+        "terminationRehireId": "",
+        "acaStatus": "yes",
+        "benetracStatus": null,
+        "gusto": null
+    },
+    {
+        "id": "354",
+        "employeeId": "1",
+        "date": "2018-09-01",
+        "employmentStatus": "Full-Time",
+        "comment": "2019 ACA Census",
+        "terminationReasonId": "",
+        "terminationTypeId": "",
+        "terminationRehireId": "",
+        "acaStatus": "yes",
+        "benetracStatus": null,
+        "gusto": null
+    }
+]
