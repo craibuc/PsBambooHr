@@ -71,7 +71,7 @@ Description = 'PowerShell module that wraps the BambooHR API.'
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
 FunctionsToExport = @(
     'Get-BambooHrEmployee','Set-BambooHrEmployee','New-BambooHrEmployee'
-    'Get-BambooHrEmployeeTable'
+    'Get-BambooHrEmployeeTableData'
     'Get-BambooHrField'
     'Get-BambooHrTable'
     'Get-BambooHrUser'

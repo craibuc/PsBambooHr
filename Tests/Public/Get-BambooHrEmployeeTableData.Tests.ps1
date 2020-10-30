@@ -7,21 +7,21 @@ $PublicPath = Join-Path $ProjectDirectory "/PsBambooHr/Public/"
 # /PsBambooHr/Tests/Fixtures/
 $FixturesDirectory = Join-Path $ProjectDirectory "/Tests/Fixtures/"
 
-# Get-BambooHrEmployeeTable.ps1
+# Get-BambooHrEmployeeTableData.ps1
 $sut = (Split-Path -Leaf $MyInvocation.MyCommand.Path) -replace '\.Tests\.', '.'
 
-# . /PsBambooHr/PsBambooHr/Public/Get-BambooHrEmployeeTable.ps1
+# . /PsBambooHr/PsBambooHr/Public/Get-BambooHrEmployeeTableData.ps1
 $Path = Join-Path $PublicPath $sut
 Write-Debug "Path: $Path"
 
 . (Join-Path $PublicPath $sut)
 
-Describe "Get-BambooHrEmployeeTable" -Tag 'unit' {
+Describe "Get-BambooHrEmployeeTableData" -Tag 'unit' {
 
     Context "Parameter validation" {
 
         BeforeAll {
-            $Command = Get-Command 'Get-BambooHrEmployeeTable'
+            $Command = Get-Command 'Get-BambooHrEmployeeTableData'
         } 
 
         $Parameters = @(
@@ -82,7 +82,7 @@ Describe "Get-BambooHrEmployeeTable" -Tag 'unit' {
 
             BeforeEach {
                 # act
-                Get-BambooHrEmployeeTable -Id $Id -TableName $TableName
+                Get-BambooHrEmployeeTableData -Id $Id -TableName $TableName
             }
     
             It "uses the correct Uri" {
@@ -136,7 +136,7 @@ Describe "Get-BambooHrEmployeeTable" -Tag 'unit' {
                 }
 
                 # act
-                Get-BambooHrEmployeeTable -Id $Id -TableName $TableName
+                Get-BambooHrEmployeeTableData -Id $Id -TableName $TableName
 
                 # assert
                 Assert-MockCalled Write-Warning -ParameterFilter { 

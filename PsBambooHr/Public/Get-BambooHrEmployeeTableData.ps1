@@ -1,5 +1,6 @@
 <#
 .SYNOPSIS
+Retuns the rows and columns for the specified table.
 
 .DESCRIPTION
 Returns a data structure representing all the table rows for a given employee and table combination. The result is not sorted in any particular order.
@@ -13,10 +14,16 @@ The subdomain used to access bamboohr. If you access bamboohr at https://mycompa
 .PARAMETER Id
 The employee's unique identifier (assigned by Bamboo HR). The employee ID of zero (0) is the employee ID associated with the API key.
 
+.PARAMETER TableName
+The name of the table.
+
+.LINK
+Get-BambooHrTable
+
 .LINK
 https://documentation.bamboohr.com/reference#get-employee-table-row-1
 #>
-function Get-BambooHrEmployeeTable {
+function Get-BambooHrEmployeeTableData {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory)]
