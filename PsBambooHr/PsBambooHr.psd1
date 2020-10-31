@@ -12,7 +12,7 @@
 RootModule = './PsBambooHr.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.2.0'
+ModuleVersion = '0.3.0'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -101,7 +101,7 @@ PrivateData = @{
     PSData = @{
 
         # Tags applied to this module. These help with module discovery in online galleries.
-        Tags = @('bamboohr')
+        Tags = @('bamboohr','bamboo','hr','powershell')
 
         # A URL to the license for this module.
         LicenseUri = 'https://github.com/craibuc/PsBambooHr/blob/master/LICENSE'
