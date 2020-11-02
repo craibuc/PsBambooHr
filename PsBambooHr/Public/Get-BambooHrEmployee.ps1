@@ -14,6 +14,18 @@ The subdomain used to access bamboohr. If you access bamboohr at https://mycompa
 .PARAMETER Id
 The employee's unique identifier (assigned by Bamboo HR). The employee ID of zero (0) is the employee ID associated with the API key.
 
+.PARAMETER LastChanged
+Include only those employee records that have changed after this date/time.
+
+.PARAMETER AllowNull
+Include only those employee records that have a null last-changed date (legacy).
+
+.PARAMETER Fields
+Array of field names to be retrieved.
+
+.NOTES
+
+
 .LINK
 Get-BambooHrField
 
@@ -27,20 +39,27 @@ function Get-BambooHrEmployee {
 
     [CmdletBinding()]
     param (
-        [Parameter(ParameterSetName='ForDirectory', Mandatory)]
+        [Parameter(ParameterSetName='AllEmployees', Mandatory)]
         [Parameter(ParameterSetName='ById',Mandatory)]
+        [Parameter(ParameterSetName='LastChanged',Mandatory)]
         [string]$ApiKey,
 
-        [Parameter(ParameterSetName='ForDirectory', Mandatory)]
+        [Parameter(ParameterSetName='AllEmployees', Mandatory)]
         [Parameter(ParameterSetName='ById',Mandatory)]
+        [Parameter(ParameterSetName='LastChanged',Mandatory)]
         [string]$Subdomain,
 
         [Parameter(ParameterSetName='ById',Mandatory)]
         [ValidatePattern('\d')] # numbers only
         [string]$Id,
 
-        [Parameter(ParameterSetName='ById')]
-        [string[]]$Fields=@('firstName','lastName')
+        [Parameter(ParameterSetName='LastChanged',Mandatory)]
+        [datetime]$LastChanged,
+
+        [Parameter(ParameterSetName='LastChanged')]
+        [switch]$AllowNull,
+
+        [string[]]$Fields #=@('firstName','lastName')
     )
     
     begin {
@@ -48,17 +67,6 @@ function Get-BambooHrEmployee {
         $Headers = @{
             Accept = 'application/json'
         }
-
-        # uri
-        if ( $Id -ne '' ) # strings are empty not null in PS
-        {
-            $Uri = "https://api.bamboohr.com/api/gateway.php/$Subdomain/v1/employees/$Id/?fields=$( $Fields -join ',' )"
-        }
-        else
-        {
-            $Uri = "https://api.bamboohr.com/api/gateway.php/$Subdomain/v1/employees/directory"
-        }
-        Write-Debug "Uri: $Uri"
 
         # credentials
         $Password = ConvertTo-SecureString 'Password' -AsPlainText -Force
@@ -68,13 +76,51 @@ function Get-BambooHrEmployee {
     process {
 
         try {
-            $Response = Invoke-WebRequest -Uri $Uri -Method Get -Headers $Headers -Credential $Credentials -UseBasicParsing
-            # switch ($Response.StatusCode) {
-            #     condition {  }
-            #     Default {}
-            # }
-            # if ($Response -ne 201) {}
-            $Response.Content | ConvertFrom-Json
+
+            # specified employee
+            if ( $Id -ne '' ) # strings are empty not null in PS
+            {
+                if ($Fields)
+                {
+                    $Uri = "https://api.bamboohr.com/api/gateway.php/$Subdomain/v1/employees/$Id/?fields=$( $Fields -join ',' )"
+                }
+                else 
+                {
+                    $Uri = "https://api.bamboohr.com/api/gateway.php/$Subdomain/v1/employees/$Id/"
+                }
+                Write-Debug "Uri: $Uri"
+
+                $Response = Invoke-WebRequest -Uri $Uri -Method Get -Headers $Headers -Credential $Credentials -UseBasicParsing
+                $Response.Content | ConvertFrom-Json
+            }
+            # all employees
+            else 
+            {
+                $Body = @{
+                    fields = $fields
+                    filters=@{}
+                }
+
+                if ($LastChanged)
+                {
+                    $Body.filters += @{ 
+                        lastChanged = @{ value=$LastChanged.ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ') }
+                    }
+
+                    if ($AllowNull)
+                    {
+                        $Body.filters.lastChanged += @{ includeNul='yes' }
+                    }
+                }
+                
+                Write-Debug ($Body | ConvertTo-Json )
+
+                $Uri = "https://api.bamboohr.com/api/gateway.php/$Subdomain/v1/reports/custom?format=json"
+                Write-Debug "Uri: $Uri"
+
+                $Response = Invoke-WebRequest -Uri $Uri -Method Post -Headers $Headers  -Body ( $Body | ConvertTo-Json ) -ContentType 'application/json' -Credential $Credentials -UseBasicParsing
+                ($Response.Content | ConvertFrom-Json).employees
+            }
 
         }
         catch {
