@@ -82,7 +82,8 @@ function Get-BambooHrEmployee {
             {
                 if ($Fields)
                 {
-                    $Uri = "https://api.bamboohr.com/api/gateway.php/$Subdomain/v1/employees/$Id/?fields=$( $Fields -join ',' )"
+                    $EncodedFields = [System.Web.HttpUtility]::UrlEncode( $Fields -join ',' )
+                    $Uri = "https://api.bamboohr.com/api/gateway.php/$Subdomain/v1/employees/$Id/?fields=$EncodedFields"
                 }
                 else 
                 {
