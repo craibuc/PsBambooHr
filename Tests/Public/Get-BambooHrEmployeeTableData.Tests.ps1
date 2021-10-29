@@ -1,20 +1,20 @@
-# /PsBambooHr
-$ProjectDirectory = Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent
+BeforeAll {
 
-# /PsBambooHr/PsBambooHr/Public
-$PublicPath = Join-Path $ProjectDirectory "/PsBambooHr/Public/"
+    # /PsBambooHr
+    $ProjectDirectory = Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent
 
-# /PsBambooHr/Tests/Fixtures/
-$FixturesDirectory = Join-Path $ProjectDirectory "/Tests/Fixtures/"
+    # /PsBambooHr/PsBambooHr/Public
+    $PublicPath = Join-Path $ProjectDirectory "/PsBambooHr/Public/"
 
-# Get-BambooHrEmployeeTableData.ps1
-$sut = (Split-Path -Leaf $MyInvocation.MyCommand.Path) -replace '\.Tests\.', '.'
+    # /PsBambooHr/Tests/Fixtures/
+    $FixturesDirectory = Join-Path $ProjectDirectory "/Tests/Fixtures/"
 
-# . /PsBambooHr/PsBambooHr/Public/Get-BambooHrEmployeeTableData.ps1
-$Path = Join-Path $PublicPath $sut
-Write-Debug "Path: $Path"
+    # Get-BambooHrEmployeeTableData.ps1
+    $SUT = (Split-Path -Leaf $PSCommandPath) -replace '\.Tests\.', '.'
 
-. (Join-Path $PublicPath $sut)
+    . (Join-Path $PublicPath $SUT)
+
+}
 
 Describe "Get-BambooHrEmployeeTableData" -Tag 'unit' {
 

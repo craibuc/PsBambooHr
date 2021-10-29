@@ -1,20 +1,20 @@
-# /PsBambooHr
-$ProjectDirectory = Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent
+BeforeAll {
+    
+    # /PsBambooHr
+    $ProjectDirectory = Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent
 
-# /PsBambooHr/PsBambooHr/Public
-$PublicPath = Join-Path $ProjectDirectory "/PsBambooHr/Public/"
+    # /PsBambooHr/PsBambooHr/Public
+    $PublicPath = Join-Path $ProjectDirectory "/PsBambooHr/Public/"
 
-# /PsBambooHr/Tests/Fixtures/
-$FixturesDirectory = Join-Path $ProjectDirectory "/Tests/Fixtures/"
+    # /PsBambooHr/Tests/Fixtures/
+    $FixturesDirectory = Join-Path $ProjectDirectory "/Tests/Fixtures/"
 
-# Get-BambooHrField.ps1
-$sut = (Split-Path -Leaf $MyInvocation.MyCommand.Path) -replace '\.Tests\.', '.'
+    # Get-BambooHrField.ps1
+    $SUT = (Split-Path -Leaf $PSCommandPath) -replace '\.Tests\.', '.'
 
-# . /PsBambooHr/PsBambooHr/Public/Get-BambooHrField.ps1
-$Path = Join-Path $PublicPath $sut
-Write-Debug "Path: $Path"
+    . (Join-Path $PublicPath $SUT)
 
-. (Join-Path $PublicPath $sut)
+}
 
 Describe "Get-BambooHrField" -Tag 'unit' {
 

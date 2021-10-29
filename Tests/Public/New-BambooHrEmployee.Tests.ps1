@@ -1,17 +1,20 @@
-# /PsBambooHr
-$ProjectDirectory = Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent
+BeforeAll {
+    
+    # /PsBambooHr
+    $ProjectDirectory = Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent
 
-# /PsBambooHr/PsBambooHr/Public
-$PublicPath = Join-Path $ProjectDirectory "/PsBambooHr/Public/"
+    # /PsBambooHr/PsBambooHr/Public
+    $PublicPath = Join-Path $ProjectDirectory "/PsBambooHr/Public/"
 
-# /PsBambooHr/Tests/Fixtures/
-$FixturesDirectory = Join-Path $ProjectDirectory "/Tests/Fixtures/"
+    # /PsBambooHr/Tests/Fixtures/
+    $FixturesDirectory = Join-Path $ProjectDirectory "/Tests/Fixtures/"
 
-# New-BambooHrEmployee.ps1
-$sut = (Split-Path -Leaf $MyInvocation.MyCommand.Path) -replace '\.Tests\.', '.'
+    # New-BambooHrEmployee.ps1
+    $SUT = (Split-Path -Leaf $PSCommandPath) -replace '\.Tests\.', '.'
 
-# . /PsBambooHr/PsBambooHr/Public/New-BambooHrEmployee.ps1
-. (Join-Path $PublicPath $sut)
+    . (Join-Path $PublicPath $SUT)
+
+}
 
 Describe "New-BambooHrEmployee" -Tag 'unit' {
 

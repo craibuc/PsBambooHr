@@ -10,12 +10,9 @@ BeforeAll {
     $FixturesDirectory = Join-Path $ProjectDirectory "/Tests/Fixtures/"
 
     # Get-BambooHrEmployee.ps1
-    $sut = (Split-Path -Leaf $PSCommandPath) -replace '\.Tests\.', '.'
+    $SUT = (Split-Path -Leaf $PSCommandPath) -replace '\.Tests\.', '.'
 
-    # . /PsBambooHr/PsBambooHr/Public/Get-BambooHrEmployee.ps1
-    $Path = Join-Path $PublicPath $sut
-
-    . (Join-Path $PublicPath $sut)
+    . (Join-Path $PublicPath $SUT)
 
 }
 
