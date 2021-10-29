@@ -27,7 +27,7 @@ Describe "Get-BambooHrEmployeeTableData" -Tag 'unit' {
         $Parameters = @(
             @{ParameterName='ApiKey';Type=[string]; Mandatory=$true}
             @{ParameterName='Subdomain';Type=[string]; Mandatory=$true}
-            @{ParameterName='Id';Type=[string]; Mandatory=$true}
+            @{ParameterName='EmployeeId';Type=[int]; Mandatory=$true}
             @{ParameterName='TableName';Type=[string]; Mandatory=$true}
         )
 
@@ -53,14 +53,21 @@ Describe "Get-BambooHrEmployeeTableData" -Tag 'unit' {
 
         BeforeAll {
             # arrange
+            $Authentication =@{
+                ApiKey = '2134d8d5-d1b4-4a1d-89ac-f44a96514bb5'
+                Subdomain = 'subdomain'
+            }
+
             $ApiKey = '2134d8d5-d1b4-4a1d-89ac-f44a96514bb5'
             $PSDefaultParameterValues['*:ApiKey'] = $ApiKey
 
             $Subdomain = 'subdomain'
             $PSDefaultParameterValues['*:Subdomain'] = $Subdomain
 
-            $Id = 1
-            $TableName = 'employmentStatus'
+            $Splat = @{
+                EmployeeId = 1
+                TableName = 'employmentStatus'    
+            }
 
         }
 
@@ -82,13 +89,13 @@ Describe "Get-BambooHrEmployeeTableData" -Tag 'unit' {
 
             BeforeEach {
                 # act
-                Get-BambooHrEmployeeTableData -Id $Id -TableName $TableName
+                Get-BambooHrEmployeeTableData @Authentication @Splat
             }
     
             It "uses the correct Uri" {
                 # assert
                 Assert-MockCalled Invoke-WebRequest -ParameterFilter { 
-                    $Uri -eq "https://api.bamboohr.com/api/gateway.php/$Subdomain/v1/employees/$Id/tables/$TableName" 
+                    $Uri -eq "https://api.bamboohr.com/api/gateway.php/$Subdomain/v1/employees/$( $Splat.EmployeeId )/tables/$( $Splat.TableName )"
                 }
             }
     
@@ -105,7 +112,7 @@ Describe "Get-BambooHrEmployeeTableData" -Tag 'unit' {
             It "uses the correct Credential" {
                 # arrange
                 $Password = ConvertTo-SecureString 'Password' -AsPlainText -Force
-                $BasicCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $ApiKey, $Password
+                $BasicCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $Authentication.ApiKey, $Password
 
                 # assert
                 Assert-MockCalled Invoke-WebRequest -ParameterFilter { 
@@ -122,8 +129,8 @@ Describe "Get-BambooHrEmployeeTableData" -Tag 'unit' {
             It "writes a warning" {
 
                 # arrange
-                $TableName = 'DummyTable'
-                $WarningMessage = "Table '$TableName' was not found for Employee #$Id"
+                $Splat.TableName = 'DummyTable'
+                $WarningMessage = "Table '$( $Splat.TableName )' was not found for Employee #$( $Splat.EmployeeId )"
 
                 Mock Invoke-WebRequest {
                     $Response = New-Object System.Net.Http.HttpResponseMessage 404
@@ -136,7 +143,7 @@ Describe "Get-BambooHrEmployeeTableData" -Tag 'unit' {
                 }
 
                 # act
-                Get-BambooHrEmployeeTableData -Id $Id -TableName $TableName
+                Get-BambooHrEmployeeTableData @Authentication @Splat
 
                 # assert
                 Assert-MockCalled Write-Warning -ParameterFilter { 

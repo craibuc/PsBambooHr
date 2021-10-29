@@ -11,14 +11,11 @@ The API key.
 .PARAMETER Subdomain
 The subdomain used to access bamboohr. If you access bamboohr at https://mycompany.bamboohr.com, then the companyDomain is "mycompany"
 
-.PARAMETER Id
+.PARAMETER EmployeeId
 The employee's unique identifier (assigned by Bamboo HR). The employee ID of zero (0) is the employee ID associated with the API key.
 
 .PARAMETER TableName
 The name of the table.
-
-.LINK
-Get-BambooHrTable
 
 .LINK
 https://documentation.bamboohr.com/reference#get-employee-table-row-1
@@ -33,8 +30,7 @@ function Get-BambooHrEmployeeTableData {
         [string]$Subdomain,
 
         [Parameter(Mandatory)]
-        [ValidatePattern('\d')] # numbers only
-        [string]$Id,
+        [int]$EmployeeId,
 
         [Parameter(Mandatory)]
         [string]$TableName
@@ -47,7 +43,7 @@ function Get-BambooHrEmployeeTableData {
         }
 
         # uri
-        $Uri = "https://api.bamboohr.com/api/gateway.php/$Subdomain/v1/employees/$Id/tables/$TableName"
+        $Uri = "https://api.bamboohr.com/api/gateway.php/$Subdomain/v1/employees/$EmployeeId/tables/$TableName"
         Write-Debug "Uri: $Uri"
 
         # credentials
@@ -67,7 +63,7 @@ function Get-BambooHrEmployeeTableData {
         catch [Microsoft.PowerShell.Commands.HttpResponseException] {
             if ( $_.Exception.Response.StatusCode -eq 'NotFound' ) 
             {
-                $Message = "Table '$TableName' was not found for Employee #$Id"
+                $Message = "Table '$TableName' was not found for Employee #$EmployeeId"
                 Write-Warning $Message
             }
             else
