@@ -58,12 +58,6 @@ Describe "Get-BambooHrEmployeeTableData" -Tag 'unit' {
                 Subdomain = 'subdomain'
             }
 
-            $ApiKey = '2134d8d5-d1b4-4a1d-89ac-f44a96514bb5'
-            $PSDefaultParameterValues['*:ApiKey'] = $ApiKey
-
-            $Subdomain = 'subdomain'
-            $PSDefaultParameterValues['*:Subdomain'] = $Subdomain
-
             $Splat = @{
                 EmployeeId = 1
                 TableName = 'employmentStatus'    
