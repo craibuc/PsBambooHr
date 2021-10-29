@@ -1,22 +1,30 @@
 {
-    "fieldId": 17,
-    "alias": "department",
-    "manageable": "yes",
-    "multiple": "no",
-    "name": "Department",
-    "options": [{
-        "id": 1,
-        "archived": "no",
-        "createdDate": "",
-        "archivedDate": "",
-        "name": "ABC"
-      },
-      {
-        "id": 2,
-        "archived": "no",
-        "createdDate": "2016-12-08T17:41:56+00:00",
-        "archivedDate": "",
-        "name": "DEF"
-      }
-    ]
-  }
+  "fieldId": 17,
+  "alias": "department",
+  "manageable": "yes",
+  "multiple": "no",
+  "name": "Department",
+  "options": [
+    {
+      "id": 1,
+      "archived": "no",
+      "createdDate": "2016-12-08T17:41:56+00:00",
+      "archivedDate": null,
+      "name": "ABC"
+    },
+    {
+      "id": 2,
+      "archived": "no",
+      "createdDate": "2016-12-08T17:41:56+00:00",
+      "archivedDate": null,
+      "name": "DEF"
+    },
+    {
+      "id": 18465,
+      "archived": "yes",
+      "createdDate": "2016-12-08T17:41:56+00:00",
+      "archivedDate": "2016-12-31T17:41:56+00:00",
+      "name": "GHI"
+    }
+  ]
+}
