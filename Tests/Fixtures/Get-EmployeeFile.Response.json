@@ -1,0 +1,33 @@
+{
+    "employee": {
+        "id": 1
+    },
+    "categories": [
+        {
+            "id": 1,
+            "name": "New Hire Docs",
+            "canRenameCategory": "yes",
+            "canDeleteCategory": "yes",
+            "canUploadFiles": "yes",
+            "displayIfEmpty": "yes",
+            "files": [
+                {
+                    "id": 1234,
+                    "name": "Employee handbook",
+                    "originalFileName": "employee_handbook.doc",
+                    "size": 23552,
+                    "dateCreated": "2011-06-28 16:50:52",
+                    "createdBy": "John Doe",
+                    "shareWithEmployee": "yes",
+                    "canRenameFile": "yes",
+                    "canDeleteFile": "yes",
+                    "canChangeShareWithEmployeeFieldValue": "yes"
+                }
+            ]
+        },
+        {
+            "id": 112,
+            "name": "Training Docs"
+        }
+    ]
+}
