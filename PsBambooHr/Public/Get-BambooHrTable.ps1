@@ -8,6 +8,9 @@ The API key.
 .PARAMETER Subdomain
 The subdomain used to access bamboohr. If you access bamboohr at https://mycompany.bamboohr.com, then the companyDomain is "mycompany"
 
+.EXAMPLE
+Get-BambooHrTable -ApiKey '3ee9c09c-c4be-4e0b-9b08-d7df909ae001' -Subdomain 'companyDomain'
+
 .LINK
 https://documentation.bamboohr.com/reference#metadata-get-a-list-of-tabular-fields-1
 

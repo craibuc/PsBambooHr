@@ -17,6 +17,9 @@ The employee's unique identifier (assigned by Bamboo HR). The employee ID of zer
 .PARAMETER TableName
 The name of the table.
 
+.EXAMPLE
+Get-Get-BambooHrEmployeeTableData -ApiKey '3ee9c09c-c4be-4e0b-9b08-d7df909ae001' -Subdomain 'companyDomain' -EmployeeId 1 -TableName 'MyTable'
+
 .LINK
 https://documentation.bamboohr.com/reference#get-employee-table-row-1
 #>

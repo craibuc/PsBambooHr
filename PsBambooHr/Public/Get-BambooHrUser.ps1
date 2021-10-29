@@ -8,6 +8,15 @@ The API key.
 .PARAMETER Subdomain
 The subdomain used to access bamboohr. If you access bamboohr at https://mycompany.bamboohr.com, then the companyDomain is "mycompany"
 
+.PARAMETER Detailed
+When set, the endpoint will return details for all users. 
+
+.EXAMPLE
+Get-BambooHrUser -ApiKey '3ee9c09c-c4be-4e0b-9b08-d7df909ae001' -Subdomain 'companyDomain'
+
+.EXAMPLE
+Get-BambooHrUser -ApiKey '3ee9c09c-c4be-4e0b-9b08-d7df909ae001' -Subdomain 'companyDomain' -Detailed
+
 .NOTES
 The "employeeId" attribute will only be set if the user record is linked to an employee record.  The last login date/time is formatted according to ISO 8601.'
 

@@ -9,7 +9,7 @@ The API key.
 The value 'mycompany' in this URI: https://mycompany.bamboohr.com.
 
 .EXAMPLE
-PS> Get-BambooHrList
+PS> Get-BambooHrList -ApiKey '3ee9c09c-c4be-4e0b-9b08-d7df909ae001' -Subdomain 'companyDomain'
 
 {
   "fieldId": 17,

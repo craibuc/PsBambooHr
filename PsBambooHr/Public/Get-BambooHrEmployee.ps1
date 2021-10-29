@@ -23,12 +23,6 @@ Include only those employee records that have a null last-changed date (legacy).
 .PARAMETER Fields
 Array of field names to be retrieved.
 
-.NOTES
-
-
-.LINK
-Get-BambooHrField
-
 .LINK
 https://documentation.bamboohr.com/reference#get-employee
 

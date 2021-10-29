@@ -14,6 +14,12 @@ The subdomain used to access bamboohr. If you access bamboohr at https://mycompa
 .PARAMETER Detailed
 When set, the endpoint will return details for all list fields. 
 
+.EXAMPLE
+Get-BambooHrField -ApiKey '3ee9c09c-c4be-4e0b-9b08-d7df909ae001' -Subdomain 'companyDomain'
+
+.EXAMPLE
+Get-BambooHrField -ApiKey '3ee9c09c-c4be-4e0b-9b08-d7df909ae001' -Subdomain 'companyDomain' -Detailed
+
 .LINK
 https://documentation.bamboohr.com/reference#metadata-get-a-list-of-fields
 
