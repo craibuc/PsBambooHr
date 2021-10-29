@@ -12,8 +12,7 @@ The subdomain used to access bamboohr. If you access bamboohr at https://mycompa
 An array of categories to add.
 
 .EXAMPLE
-
-# PS> New-BambooHrEmployeeFileCategory -ApiKey '3ee9c09c-c4be-4e0b-9b08-d7df909ae001' -Subdomain 'companyDomain' -Name 'Category I','Category II'
+PS> New-BambooHrEmployeeFileCategory -ApiKey '3ee9c09c-c4be-4e0b-9b08-d7df909ae001' -Subdomain 'companyDomain' -Name 'Category I','Category II'
 
 .LINK
 https://documentation.bamboohr.com/reference#add-employee-file-category-1
