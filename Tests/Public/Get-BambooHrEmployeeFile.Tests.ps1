@@ -9,36 +9,39 @@ BeforeAll {
     # /PsBambooHr/Tests/Fixtures/
     $FixturesDirectory = Join-Path $ProjectDirectory "/Tests/Fixtures/"
 
-    # Get-BambooHrEmployeeFfile.ps1
+    # Get-BambooHrEmployeeFile.ps1
     $sut = (Split-Path -Leaf $PSCommandPath) -replace '\.Tests\.', '.'
 
-    # . /PsBambooHr/PsBambooHr/Public/Get-BambooHrEmployeeFfile.ps1
+    # . /PsBambooHr/PsBambooHr/Public/Get-BambooHrEmployeeFile.ps1
     $Path = Join-Path $PublicPath $sut
 
     . (Join-Path $PublicPath $sut)
 
 }
 
-Describe "Get-BambooHrEmployeeFfile" -Tag 'unit' {
+Describe "Get-BambooHrEmployeeFile" -Tag 'unit' {
 
     Context "Parameter validation" {
 
         BeforeAll {
-            $Command = Get-Command 'Get-BambooHrEmployee'
+            $Command = Get-Command 'Get-BambooHrEmployeeFile'
         } 
 
         $Parameters = @(
             @{
                 ParameterName = 'ApiKey'
                 Type = [string]
+                Mandatory=$true
             }
             @{
                 ParameterName = 'Subdomain'
                 Type = [string]
+                Mandatory=$true
             }
             @{
                 ParameterName = 'Id'
                 Type = [string]
+                Mandatory=$true
                 ValidatePattern = '\d'
             }
         ) | ForEach-Object {
@@ -50,6 +53,13 @@ Describe "Get-BambooHrEmployeeFfile" -Tag 'unit' {
                 $Command | Should -HaveParameter $ParameterName -Type $Type
             }
 
+            it '<ParameterName> mandatory is <Mandatory>' -TestCases $Parameter {
+                param($ParameterName, $Mandatory)
+                
+                if ($Mandatory) { $Command | Should -HaveParameter $ParameterName -Mandatory }
+                else { $Command | Should -HaveParameter $ParameterName -Not -Mandatory }
+            }    
+    
             if ( $null -ne $_.ValidatePattern ) {
                 it '<ParameterName> has a ValidatePattern of ''<ValidatePattern>''' -TestCases $_ {
                     param ($ParameterName,$ValidatePattern)
