@@ -11,7 +11,7 @@ The API key.
 .PARAMETER Subdomain
 The subdomain used to access bamboohr. If you access bamboohr at https://mycompany.bamboohr.com, then the companyDomain is "mycompany"
 
-.PARAMETER Id
+.PARAMETER EmployeeId
 The employee's unique identifier (assigned by Bamboo HR). The employee ID of zero (0) is the employee ID associated with the API key.
 
 .PARAMETER TableName
@@ -19,6 +19,9 @@ The name of the table.
 
 .PARAMETER Data
 Data to be add to the table.
+
+.EXAMPLE
+PS> New-BambooHrEmployeeTableData -ApiKey '3ee9c09c-c4be-4e0b-9b08-d7df909ae001' -Subdomain 'companyDomain' -EmployeeId 1 -TableName 'MyTable' -Data [pscustomobject]@{Key='Value'}
 
 .LINK
 Get-BambooHrTable
@@ -41,8 +44,7 @@ function New-BambooHrEmployeeTableData {
         [string]$Subdomain,
 
         [Parameter(Mandatory)]
-        [ValidatePattern('\d')] # numbers only
-        [string]$Id,
+        [int]$EmployeeId,
 
         [Parameter(Mandatory)]
         [string]$TableName,
@@ -58,7 +60,7 @@ function New-BambooHrEmployeeTableData {
         }
 
         # uri
-        $Uri = "https://api.bamboohr.com/api/gateway.php/$Subdomain/v1/employees/$Id/tables/$TableName"
+        $Uri = "https://api.bamboohr.com/api/gateway.php/$Subdomain/v1/employees/$EmployeeId/tables/$TableName"
         Write-Debug "Uri: $Uri"
 
         # credentials
@@ -74,14 +76,17 @@ function New-BambooHrEmployeeTableData {
 
             $Body = $Data | ConvertTo-Json
 
-            $Response = Invoke-WebRequest -Uri $Uri -Method Post -Body $Body -Headers $Headers -ContentType 'application/json' -Credential $Credentials -UseBasicParsing -Verbose:$false
-            # $Response.Content | ConvertFrom-Json
+            if ( $PSCmdlet.ShouldProcess('Table','Post') )
+            {
+                $Response = Invoke-WebRequest -Uri $Uri -Method Post -Body $Body -Headers $Headers -ContentType 'application/json' -Credential $Credentials -UseBasicParsing -Verbose:$false
+                # $Response.Content | ConvertFrom-Json    
+            }
         }
 
         catch [Microsoft.PowerShell.Commands.HttpResponseException] {
             if ( $_.Exception.Response.StatusCode -eq 'NotFound' ) 
             {
-                $Message = "Table '$TableName' was not found for Employee #$Id"
+                $Message = "Table '$TableName' was not found for Employee #$EmployeeId"
                 Write-Warning $Message
             }
             else

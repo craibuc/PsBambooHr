@@ -8,7 +8,7 @@ The API key.
 .PARAMETER Subdomain
 The subdomain used to access bamboohr. If you access bamboohr at https://mycompany.bamboohr.com, then the companyDomain is "mycompany"
 
-.PARAMETER Id
+.PARAMETER EmployeeId
 The employee's unique identifier (assigned by Bamboo HR). The employee ID of zero (0) is the employee ID associated with the API key.
 
 .PARAMETER Path
@@ -36,14 +36,12 @@ function New-BambooHrEmployeeFile
         [string]$Subdomain,
 
         [Parameter(Mandatory)]
-        # [ValidatePattern('\d')] # numbers only
         [int]$EmployeeId,
 
         [Parameter(Mandatory)]
         [string]$Path,
 
         [Parameter(Mandatory)]
-        # [ValidatePattern('\d')] # numbers only
         [int]$CategoryId,
 
         [Parameter()]

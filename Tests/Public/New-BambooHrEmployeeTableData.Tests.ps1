@@ -27,7 +27,7 @@ Describe "New-BambooHrEmployeeTableData" -Tag 'unit' {
         $Parameters = @(
             @{ParameterName='ApiKey';Type=[string]; Mandatory=$true}
             @{ParameterName='Subdomain';Type=[string]; Mandatory=$true}
-            @{ParameterName='Id';Type=[string]; Mandatory=$true}
+            @{ParameterName='EmployeeId';Type=[int]; Mandatory=$true}
             @{ParameterName='TableName';Type=[string]; Mandatory=$true}
             @{ParameterName='Data';Type=[pscustomobject]; Mandatory=$true}
         )
@@ -54,21 +54,22 @@ Describe "New-BambooHrEmployeeTableData" -Tag 'unit' {
 
         BeforeAll {
             # arrange
-            $ApiKey = '2134d8d5-d1b4-4a1d-89ac-f44a96514bb5'
-            $PSDefaultParameterValues['*:ApiKey'] = $ApiKey
+            $Authentication = @{
+                ApiKey = '2134d8d5-d1b4-4a1d-89ac-f44a96514bb5'    
+                Subdomain = 'subdomain'
+            }
 
-            $Subdomain = 'subdomain'
-            $PSDefaultParameterValues['*:Subdomain'] = $Subdomain
-
-            $Id = 1
-            $TableName = 'jobInfo'
-            $Data = [pscustomobject]@{
-                date = "2010-06-01"
-                location = "New York Office"
-                divison = "Sprockets"
-                department = "Research and Development"
-                jobTitle = "Machinist"
-                reportsTo = "John Smith"
+            $Splat = @{
+                EmployeeId = 1
+                TableName = 'jobInfo'
+                Data = [pscustomobject]@{
+                    date = "2010-06-01"
+                    location = "New York Office"
+                    divison = "Sprockets"
+                    department = "Research and Development"
+                    jobTitle = "Machinist"
+                    reportsTo = "John Smith"
+                }    
             }
 
         }
@@ -91,13 +92,13 @@ Describe "New-BambooHrEmployeeTableData" -Tag 'unit' {
 
             BeforeEach {
                 # act
-                New-BambooHrEmployeeTableData -Id $Id -TableName $TableName -Data $Data
+                New-BambooHrEmployeeTableData @Authentication @Splat
             }
     
             It "uses the correct Uri" {
                 # assert
                 Assert-MockCalled Invoke-WebRequest -ParameterFilter { 
-                    $Uri -eq "https://api.bamboohr.com/api/gateway.php/$Subdomain/v1/employees/$Id/tables/$TableName" 
+                    $Uri -eq "https://api.bamboohr.com/api/gateway.php/$( $Authentication.Subdomain )/v1/employees/$( $Splat.EmployeeId )/tables/$( $Splat.TableName )"
                 }
             }
     
@@ -119,7 +120,7 @@ Describe "New-BambooHrEmployeeTableData" -Tag 'unit' {
             It "uses the correct Credential" {
                 # arrange
                 $Password = ConvertTo-SecureString 'Password' -AsPlainText -Force
-                $BasicCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $ApiKey, $Password
+                $BasicCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $Authentication.ApiKey, $Password
 
                 # assert
                 Assert-MockCalled Invoke-WebRequest -ParameterFilter { 
@@ -132,7 +133,7 @@ Describe "New-BambooHrEmployeeTableData" -Tag 'unit' {
             It "uses the correct Body" {
                 # assert
                 Assert-MockCalled Invoke-WebRequest -ParameterFilter { 
-                    $Expected = [pscustomobject]$Data
+                    $Expected = [pscustomobject]$Splat.Data
 
                     $Actual = $Body | ConvertFrom-Json
                     Write-Debug $Actual
@@ -151,8 +152,8 @@ Describe "New-BambooHrEmployeeTableData" -Tag 'unit' {
             It "writes a warning" {
 
                 # arrange
-                $TableName = 'DummyTable'
-                $WarningMessage = "Table '$TableName' was not found for Employee #$Id"
+                $Splat.TableName = 'DummyTable'
+                $WarningMessage = "Table '$( $Splat.TableName )' was not found for Employee #$( $Splat.EmployeeId )"
 
                 Mock Invoke-WebRequest {
                     $Response = New-Object System.Net.Http.HttpResponseMessage 404
@@ -165,7 +166,7 @@ Describe "New-BambooHrEmployeeTableData" -Tag 'unit' {
                 }
 
                 # act
-                New-BambooHrEmployeeTableData -Id $Id -TableName $TableName -Data $Data
+                New-BambooHrEmployeeTableData @Authentication @Splat
 
                 # assert
                 Assert-MockCalled Write-Warning -ParameterFilter { 
