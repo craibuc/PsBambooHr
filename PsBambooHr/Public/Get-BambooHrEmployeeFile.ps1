@@ -8,11 +8,11 @@ The API key.
 .PARAMETER Subdomain
 The subdomain used to access bamboohr. If you access bamboohr at https://mycompany.bamboohr.com, then the companyDomain is "mycompany".
 
-.PARAMETER Id
-The employee record's primary key.
+.PARAMETER EmployeeId
+The employee record's unique identifier.
 
 .EXAMPLE
-PS > Get-BambooHrEmployeeFile -ApiKey '3ee9c09c-c4be-4e0b-9b08-d7df909ae001' -Subdomain 'companyDomain' -Id 1
+PS > Get-BambooHrEmployeeFile -ApiKey '3ee9c09c-c4be-4e0b-9b08-d7df909ae001' -Subdomain 'companyDomain' -EmployeeId 1
 
 {
     "employee": {
@@ -64,8 +64,7 @@ function Get-BambooHrEmployeeFile
         [string]$Subdomain,
 
         [Parameter(Mandatory)]
-        [ValidatePattern('\d')] # numbers only
-        [string]$Id
+        [int]$EmployeeId
     )
 
     begin {
@@ -73,7 +72,7 @@ function Get-BambooHrEmployeeFile
         $Headers = @{ Accept = 'application/json' }
 
         # uri
-        $Uri = "https://api.bamboohr.com/api/gateway.php/$Subdomain/v1/employees/$Id/files/view/"
+        $Uri = "https://api.bamboohr.com/api/gateway.php/$Subdomain/v1/employees/$EmployeeId/files/view/"
         Write-Debug "Uri: $Uri"
 
         # credentials

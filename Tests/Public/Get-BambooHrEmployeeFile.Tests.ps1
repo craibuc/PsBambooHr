@@ -36,10 +36,10 @@ Describe "Get-BambooHrEmployeeFile" -Tag 'unit' {
                 Mandatory=$true
             }
             @{
-                ParameterName = 'Id'
-                Type = [string]
+                ParameterName = 'EmployeeId'
+                Type = [int]
                 Mandatory=$true
-                ValidatePattern = '\d'
+                # ValidatePattern = '\d'
             }
         ) | ForEach-Object {
 
@@ -73,12 +73,12 @@ Describe "Get-BambooHrEmployeeFile" -Tag 'unit' {
 
         BeforeAll {
             # arrange
-            $ApiKey = '2134d8d5-d1b4-4a1d-89ac-f44a96514bb5'
-            $Password = ConvertTo-SecureString 'Password' -AsPlainText -Force
+            $Authentication = @{
+                ApiKey = '2134d8d5-d1b4-4a1d-89ac-f44a96514bb5'
+                Subdomain = 'subdomain'
+            }
 
-            $Subdomain = 'subdomain'
-
-            $Id = 1
+            $EmployeeId = 1
 
             Mock Invoke-WebRequest {
                 $Fixture = 'Get-EmployeeFile.Response.json'
@@ -93,15 +93,14 @@ Describe "Get-BambooHrEmployeeFile" -Tag 'unit' {
 
         BeforeEach {
             # act
-            Get-BambooHrEmployeeFile -ApiKey $ApiKey -Subdomain $Subdomain -Id $Id
+            Get-BambooHrEmployeeFile @Authentication -EmployeeId $EmployeeId
         }
         Context 'Request' {
 
             It "uses the correct Uri" {
                 # assert
                 Assert-MockCalled Invoke-WebRequest -ParameterFilter { 
-                    # Write-Debug "Uri: $Uri"
-                    $Uri -eq "https://api.bamboohr.com/api/gateway.php/$Subdomain/v1/employees/$Id/files/view/"
+                    $Uri -eq "https://api.bamboohr.com/api/gateway.php/$( $Authentication.Subdomain )/v1/employees/$EmployeeId/files/view/"
                 }
             }
     
@@ -117,7 +116,8 @@ Describe "Get-BambooHrEmployeeFile" -Tag 'unit' {
     
             It "uses the correct Credential" {
                 # arrange
-                $BasicCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $ApiKey, $Password
+                $Password = ConvertTo-SecureString 'Password' -AsPlainText -Force
+                $BasicCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $Authentication.ApiKey, $Password
 
                 # assert
                 Assert-MockCalled Invoke-WebRequest -ParameterFilter { 
