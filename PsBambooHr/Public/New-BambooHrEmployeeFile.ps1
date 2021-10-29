@@ -36,17 +36,18 @@ function New-BambooHrEmployeeFile
         [string]$Subdomain,
 
         [Parameter(Mandatory)]
-        [ValidatePattern('\d')] # numbers only
-        [string]$Id,
+        # [ValidatePattern('\d')] # numbers only
+        [int]$EmployeeId,
 
         [Parameter(Mandatory)]
         [string]$Path,
 
         [Parameter(Mandatory)]
-        [ValidatePattern('\d')] # numbers only
-        [string]$CategoryId,
+        # [ValidatePattern('\d')] # numbers only
+        [int]$CategoryId,
 
-        [switch]$Share
+        [Parameter()]
+        [bool]$Share
     )
 
     begin {
@@ -54,7 +55,6 @@ function New-BambooHrEmployeeFile
             Accept = 'application/json'
         }
 
-        # credentials
         $Password = ConvertTo-SecureString 'Password' -AsPlainText -Force
         $Credentials = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $ApiKey, $Password
     }
@@ -110,11 +110,11 @@ function New-BambooHrEmployeeFile
         $Form = @{
             file = $Item
             fileName = $Item.Name
-            category = $CategoryId
-            share = $Share.IsPresent ? 'yes' : 'no'
+            category = $CategoryId.ToString()
+            share = $Share ? 'yes' : 'no'
         }
     
-        $Uri = "https://api.bamboohr.com/api/gateway.php/$Subdomain/v1/employees/$Id/files"
+        $Uri = "https://api.bamboohr.com/api/gateway.php/$Subdomain/v1/employees/$EmployeeId/files"
         Write-Debug "Uri: $Uri"
         
         # $FileHeader = [System.Net.Http.Headers.ContentDispositionHeaderValue]::new('form-data')
@@ -137,9 +137,12 @@ function New-BambooHrEmployeeFile
 
         try
         {
-            # $Response = Invoke-WebRequest -Uri $Uri -Method Post -Body $MultipartContent -Headers $Headers -Credential $Credentials -UseBasicParsing
-            $Response = Invoke-WebRequest -Proxy 'http://localhost:8080' -Uri $Uri -Method Post -Form $Form -Headers $Headers -Credential $Credentials -UseBasicParsing
-            $Response
+            if ( $PSCmdlet.ShouldProcess($Item.Name, 'Send') )
+            {
+                # $Response = Invoke-WebRequest -Proxy 'http://localhost:8080' -Uri $Uri -Method Post -Form $Form -Headers $Headers -Credential $Credentials -UseBasicParsing
+                $Response = Invoke-WebRequest -Uri $Uri -Method Post -Form $Form -Headers $Headers -Credential $Credentials -UseBasicParsing
+                $Response
+            }
         }
         catch
         {

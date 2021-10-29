@@ -27,10 +27,10 @@ Describe "New-BambooHrEmployeeFile" -Tag 'unit' {
         $Parameters = @(
             @{ParameterName='ApiKey';Type=[string]; Mandatory=$true}
             @{ParameterName='Subdomain';Type=[string]; Mandatory=$true}
-            @{ParameterName='ID';Type=[string]; Mandatory=$true}
+            @{ParameterName='EmployeeId';Type=[int]; Mandatory=$true}
             @{ParameterName='Path';Type=[string]; Mandatory=$true}
-            @{ParameterName='CategoryId';Type=[string]; Mandatory=$true}
-            @{ParameterName='Share';Type=[switch]; Mandatory=$false}
+            @{ParameterName='CategoryId';Type=[int]; Mandatory=$true}
+            @{ParameterName='Share';Type=[bool]; Mandatory=$false}
         )
 
         Context "Type" {
@@ -64,7 +64,7 @@ Describe "New-BambooHrEmployeeFile" -Tag 'unit' {
             New-Item -ItemType File -Path $Path
 
             $Splat = @{
-                Id = 1
+                EmployeeId = 1
                 Path = $Path
                 CategoryId = 28
                 Share = $true    
@@ -88,7 +88,7 @@ Describe "New-BambooHrEmployeeFile" -Tag 'unit' {
             It "uses the correct Uri" {
                 # assert
                 Assert-MockCalled Invoke-WebRequest -ParameterFilter { 
-                    $Uri -eq "https://api.bamboohr.com/api/gateway.php/$( $Authentication.Subdomain )/v1/employees/$( $Splat.Id )/files"
+                    $Uri -eq "https://api.bamboohr.com/api/gateway.php/$( $Authentication.Subdomain )/v1/employees/$( $Splat.EmployeeId )/files"
                 }
             }
     
@@ -117,7 +117,7 @@ Describe "New-BambooHrEmployeeFile" -Tag 'unit' {
             It "uses the correct Form" {
                 # assert
                 Assert-MockCalled Invoke-WebRequest -ParameterFilter {
-                    # $Form.file -eq $Path -and
+                    # $Form.file -eq $Splat.Path -and
                     $Form.fileName -eq (Split-Path $Splat.Path -Leaf) -and
                     $Form.category -eq $Splat.CategoryId -and
                     $Form.share -eq ($Splat.Share ? 'yes' : 'no')        
