@@ -27,8 +27,8 @@ Describe "Remove-BambooHrEmployeeFile" -Tag 'unit' {
         $Parameters = @(
             @{ParameterName='ApiKey';Type=[string]; Mandatory=$true}
             @{ParameterName='Subdomain';Type=[string]; Mandatory=$true}
-            @{ParameterName='Id';Type=[string]; Mandatory=$true}
-            @{ParameterName='FileId';Type=[string]; Mandatory=$true}
+            @{ParameterName='EmployeeId';Type=[int]; Mandatory=$true}
+            @{ParameterName='FileId';Type=[int]; Mandatory=$true}
         )
 
         Context "Type" {
@@ -53,12 +53,15 @@ Describe "Remove-BambooHrEmployeeFile" -Tag 'unit' {
 
         BeforeAll {
             # arrange
-            $ApiKey = '2134d8d5-d1b4-4a1d-89ac-f44a96514bb5'
-            $Password = ConvertTo-SecureString 'Password' -AsPlainText -Force
-            $Subdomain = 'subdomain'
+            $Authentication = @{
+                ApiKey = '2134d8d5-d1b4-4a1d-89ac-f44a96514bb5'
+                Subdomain = 'subdomain'    
+            }
 
-            $Id=1
-            $FileId=100
+            $Splat = @{
+                EmployeeId=1
+                FileId=100    
+            }
 
             Mock Invoke-WebRequest {
                 $Response = New-MockObject -Type  Microsoft.PowerShell.Commands.BasicHtmlWebResponseObject
@@ -71,14 +74,14 @@ Describe "Remove-BambooHrEmployeeFile" -Tag 'unit' {
 
             BeforeEach {
                 # act
-                Remove-BambooHrEmployeeFile -ApiKey $ApiKey -Subdomain $Subdomain -Id $Id -FileId $FileId
+                Remove-BambooHrEmployeeFile @Authentication @Splat
             }
     
             It "uses the correct Uri" {
                 # assert
                 Assert-MockCalled Invoke-WebRequest -ParameterFilter { 
                     Write-Debug "Uri: $Uri"
-                    $Uri -eq "https://api.bamboohr.com/api/gateway.php/$Subdomain/v1/employees/$Id/files/$FileId"
+                    $Uri -eq "https://api.bamboohr.com/api/gateway.php/$( $Authentication.Subdomain )/v1/employees/$( $Splat.EmployeeId )/files/$( $Splat.FileId )"
                 }
             }
     
@@ -94,7 +97,8 @@ Describe "Remove-BambooHrEmployeeFile" -Tag 'unit' {
     
             It "uses the correct Credential" {
                 # arrange
-                $BasicCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $ApiKey, $Password
+                $Password = ConvertTo-SecureString 'Password' -AsPlainText -Force
+                $BasicCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $Authentication.ApiKey, $Password
 
                 # assert
                 Assert-MockCalled Invoke-WebRequest -ParameterFilter { 

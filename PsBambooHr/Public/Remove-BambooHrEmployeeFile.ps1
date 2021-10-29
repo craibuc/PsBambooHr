@@ -8,14 +8,14 @@ The API key.
 .PARAMETER Subdomain
 The subdomain used to access bamboohr. If you access bamboohr at https://mycompany.bamboohr.com, then the companyDomain is "mycompany"
 
-.PARAMETER Id
-The employee record's primary key.
+.PARAMETER EmployeeId
+The employee record's unique identifier.
 
 .PARAMETER FileId
-The file record's primary key.
+The file record's unique identifier.
 
 .EXAMPLE
-PS> Remove-BambooHrEmployeeFile -ApiKey '3ee9c09c-c4be-4e0b-9b08-d7df909ae001' -Subdomain 'companyDomain' -Id 1 -FileId 100
+PS> Remove-BambooHrEmployeeFile -ApiKey '3ee9c09c-c4be-4e0b-9b08-d7df909ae001' -Subdomain 'companyDomain' -EmployeeId 1 -FileId 100
 
 .LINK
 https://documentation.bamboohr.com/reference#delete-employee-file-1
@@ -32,12 +32,10 @@ function Remove-BambooHrEmployeeFile
         [string]$Subdomain,
 
         [Parameter(Mandatory)]
-        [ValidatePattern('\d')] # numbers only
-        [string]$Id,
+        [int]$EmployeeId,
 
         [Parameter(Mandatory)]
-        [ValidatePattern('\d')] # numbers only
-        [string]$FileId
+        [int]$FileId
     )
 
     begin {
@@ -50,14 +48,14 @@ function Remove-BambooHrEmployeeFile
         $Password = ConvertTo-SecureString 'Password' -AsPlainText -Force
         $Credentials = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $ApiKey, $Password
 
-        $Uri = "https://api.bamboohr.com/api/gateway.php/$Subdomain/v1/employees/$Id/files/$FileId"
+        $Uri = "https://api.bamboohr.com/api/gateway.php/$Subdomain/v1/employees/$EmployeeId/files/$FileId"
     }
 
     process {
 
         try
         {
-            if ( $PSCmdlet.ShouldProcess("EmployeeId: $Id; FileId: $FileId",'Delete') ) 
+            if ( $PSCmdlet.ShouldProcess("EmployeeId: $EmployeeId; FileId: $FileId",'Delete') ) 
             {
                 $Response = Invoke-WebRequest -Uri $Uri -Method Delete -Headers $Headers -ContentType "application/json" -Credential $Credentials -UseBasicParsing
             }
