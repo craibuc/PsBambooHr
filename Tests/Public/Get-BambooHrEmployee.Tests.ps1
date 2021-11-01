@@ -44,9 +44,8 @@ Describe "Get-BambooHrEmployee" -Tag 'unit' {
                 )
             }
             @{
-                ParameterName = 'Id'
-                Type = [string]
-                ValidatePattern = '\d'
+                ParameterName = 'EmployeeId'
+                Type = [System.Nullable[int]]
                 ParameterSets = @(
                     @{ParameterSetName='ById';Mandatory=$true}
                 )
@@ -109,9 +108,10 @@ Describe "Get-BambooHrEmployee" -Tag 'unit' {
 
         BeforeAll {
             # arrange
-            $ApiKey = '2134d8d5-d1b4-4a1d-89ac-f44a96514bb5'
-            $Password = ConvertTo-SecureString 'Password' -AsPlainText -Force
-            $Subdomain = 'subdomain'
+            $Authentication = @{
+                ApiKey = '2134d8d5-d1b4-4a1d-89ac-f44a96514bb5'
+                Subdomain = 'subdomain'
+            }
         }
 
         BeforeEach {
@@ -124,47 +124,54 @@ Describe "Get-BambooHrEmployee" -Tag 'unit' {
                 $Response | Add-Member -Type NoteProperty -Name 'Content' -Value $Content -Force
                 $Response
             }
-
-            # act
-            Get-BambooHrEmployee -ApiKey $ApiKey -Subdomain $Subdomain
         }
     
-        It "uses the correct Uri" {
-            # assert
-            Assert-MockCalled Invoke-WebRequest -ParameterFilter { 
-                $Uri -eq "https://api.bamboohr.com/api/gateway.php/$Subdomain/v1/reports/custom?format=json"
-            }
-        }
+        Context 'Basic' {
 
-        It "uses the correct Method" {    
-            # assert
-            Assert-MockCalled Invoke-WebRequest -ParameterFilter { $Method -eq 'Post' }
-        }
+            BeforeEach {
+                # act
+                Get-BambooHrEmployee @Authentication
+            }
+
+            It "uses the correct Uri" {
+                # assert
+                Should -Invoke Invoke-WebRequest -ParameterFilter { 
+                    $Uri -eq "https://api.bamboohr.com/api/gateway.php/$( $Authentication.Subdomain )/v1/reports/custom?format=json"
+                }
+            }
     
-        It "uses the correct Accept" {
-            # assert
-            Assert-MockCalled Invoke-WebRequest -ParameterFilter { $Headers.Accept -eq 'application/json' }
-        }
-
-        It "uses the correct Credential" {
-            # arrange
-            $BasicCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $ApiKey, $Password
-
-            # assert
-            Assert-MockCalled Invoke-WebRequest -ParameterFilter { 
-                $Credential.UserName -eq $BasicCredential.UserName -and
-                ($Credential.Password | ConvertFrom-SecureString -AsPlainText) -eq ($BasicCredential.Password | ConvertFrom-SecureString -AsPlainText) -and
-                $UseBasicParsing -eq $true
+            It "uses the correct Method" {    
+                # assert
+                Should -Invoke Invoke-WebRequest -ParameterFilter { $Method -eq 'Post' }
             }
-        }
-
-        It "uses the correct Body" {
-
-            Assert-MockCalled Invoke-WebRequest -ParameterFilter { 
-                $Actual = $Body | ConvertFrom-Json
-                $Actual.fields -eq $null
+        
+            It "uses the correct Accept" {
+                # assert
+                Should -Invoke Invoke-WebRequest -ParameterFilter { $Headers.Accept -eq 'application/json' }
             }
-
+    
+            It "uses the correct Credential" {
+                # arrange
+                $Password = ConvertTo-SecureString 'Password' -AsPlainText -Force
+                $BasicCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $Authentication.ApiKey, $Password
+    
+                # assert
+                Should -Invoke Invoke-WebRequest -ParameterFilter { 
+                    $Credential.UserName -eq $BasicCredential.UserName -and
+                    ($Credential.Password | ConvertFrom-SecureString -AsPlainText) -eq ($BasicCredential.Password | ConvertFrom-SecureString -AsPlainText) -and
+                    $UseBasicParsing -eq $true
+                }
+            }
+    
+            It "uses the correct Body" {
+    
+                Should -Invoke Invoke-WebRequest -ParameterFilter {
+                    $Actual = $Body | ConvertFrom-Json
+                    $Actual.fields.count -eq 0
+                }
+    
+            }
+    
         }
 
         Context "when the Fields parameter is supplied" {
@@ -173,22 +180,13 @@ Describe "Get-BambooHrEmployee" -Tag 'unit' {
                 # arrange
                 $Fields = 'firstName','lastName'
 
-                Mock Invoke-WebRequest {
-                    $Fixture = 'Get-Report.Response.json'
-                    $Content = Get-Content (Join-Path $FixturesDirectory $Fixture) -Raw
-    
-                    $Response = New-MockObject -Type  Microsoft.PowerShell.Commands.BasicHtmlWebResponseObject
-                    $Response | Add-Member -Type NoteProperty -Name 'Content' -Value $Content -Force
-                    $Response
-                }
-    
                 # act
-                Get-BambooHrEmployee -ApiKey $ApiKey -Subdomain $Subdomain -Fields $Fields
+                Get-BambooHrEmployee @Authentication -Fields $Fields
             }
 
             It "uses the correct Body" {
 
-                Assert-MockCalled Invoke-WebRequest -ParameterFilter { 
+                Should -Invoke Invoke-WebRequest -ParameterFilter { 
                     $Actual = $Body | ConvertFrom-Json
     
                     $Delta = Compare-Object -ReferenceObject $Fields -DifferenceObject $Actual.fields
@@ -205,34 +203,27 @@ Describe "Get-BambooHrEmployee" -Tag 'unit' {
 
             BeforeEach {
                 # arrange
-                $Id = 1
-
-                Mock Invoke-WebRequest {
-                    $Fixture = 'Get-Employee.Response.json'
-                    $Content = Get-Content (Join-Path $FixturesDirectory $Fixture) -Raw
-    
-                    $Response = New-MockObject -Type  Microsoft.PowerShell.Commands.BasicHtmlWebResponseObject
-                    $Response | Add-Member -Type NoteProperty -Name 'Content' -Value $Content -Force
-                    $Response
-                }
+                $EmployeeId = 1
         
                 # act
-                Get-BambooHrEmployee -ApiKey $ApiKey -Subdomain $Subdomain -Id $Id
+                Get-BambooHrEmployee @Authentication -EmployeeId $EmployeeId
             }
     
             It "uses the correct Uri" {
                 # assert
-                Assert-MockCalled Invoke-WebRequest -ParameterFilter { $Uri -eq "https://api.bamboohr.com/api/gateway.php/$Subdomain/v1/employees/$Id/" }
+                Should -Invoke Invoke-WebRequest -ParameterFilter { 
+                    $Uri -eq "https://api.bamboohr.com/api/gateway.php/$( $Authentication.Subdomain )/v1/employees/$EmployeeId/" 
+                }
             }
     
             It "uses the correct Method" {    
                 # assert
-                Assert-MockCalled Invoke-WebRequest -ParameterFilter { $Method -eq 'Get' }
+                Should -Invoke Invoke-WebRequest -ParameterFilter { $Method -eq 'Get' }
             }
         
             It "uses the correct Accept" {
                 # assert
-                Assert-MockCalled Invoke-WebRequest -ParameterFilter { $Headers.Accept -eq 'application/json' }
+                Should -Invoke Invoke-WebRequest -ParameterFilter { $Headers.Accept -eq 'application/json' }
             }
 
             Context "when the Fields parameter is supplied" {
@@ -242,13 +233,15 @@ Describe "Get-BambooHrEmployee" -Tag 'unit' {
                     $Fields = 'lastName','firstName'
 
                     # act
-                    Get-BambooHrEmployee -ApiKey $ApiKey -Subdomain $Subdomain -Id $Id -Fields $Fields
+                    Get-BambooHrEmployee @Authentication -EmployeeId $EmployeeId -Fields $Fields
                 }
         
                 It "uses the correct Uri" {
                     # assert
-                    Assert-MockCalled Invoke-WebRequest -ParameterFilter { 
-                        $Uri -eq "https://api.bamboohr.com/api/gateway.php/$Subdomain/v1/employees/$Id/?fields=@( $Fields -join ',')"
+                    Should -Invoke Invoke-WebRequest -ParameterFilter { 
+                        $EncodedFields = [System.Web.HttpUtility]::UrlEncode( $Fields -join ',' )
+                        $Expected = "https://api.bamboohr.com/api/gateway.php/$( $Authentication.Subdomain )/v1/employees/$EmployeeId/?fields=$EncodedFields"
+                        $Uri -eq $Expected
                     }
                 }
     
@@ -262,50 +255,41 @@ Describe "Get-BambooHrEmployee" -Tag 'unit' {
                 # arrange
                 $LastChanged = '10/30/2020 12:00:00'
 
-                Mock Invoke-WebRequest {
-                    $Fixture = 'Get-Report.Response.json'
-                    $Content = Get-Content (Join-Path $FixturesDirectory $Fixture) -Raw
-    
-                    $Response = New-MockObject -Type  Microsoft.PowerShell.Commands.BasicHtmlWebResponseObject
-                    $Response | Add-Member -Type NoteProperty -Name 'Content' -Value $Content -Force
-                    $Response
-                }
-
                 # act
-                Get-BambooHrEmployee -ApiKey $ApiKey -Subdomain $Subdomain -LastChanged $LastChanged
+                Get-BambooHrEmployee @Authentication -LastChanged $LastChanged
             }
             
             It "uses the correct Uri" {
                 # assert
-                Assert-MockCalled Invoke-WebRequest -ParameterFilter { $Uri -eq "https://api.bamboohr.com/api/gateway.php/$Subdomain/v1/reports/custom?format=json" }
+                Should -Invoke Invoke-WebRequest -ParameterFilter { $Uri -eq "https://api.bamboohr.com/api/gateway.php/$( $Authentication.Subdomain )/v1/reports/custom?format=json" }
             }
 
             It "uses the correct Method" {    
                 # assert
-                Assert-MockCalled Invoke-WebRequest -ParameterFilter { $Method -eq 'Post' }
+                Should -Invoke Invoke-WebRequest -ParameterFilter { $Method -eq 'Post' }
             }
 
             It "uses the correct Body" {
 
-                Assert-MockCalled Invoke-WebRequest -ParameterFilter { 
+                Should -Invoke Invoke-WebRequest -ParameterFilter { 
                     $Actual = $Body | ConvertFrom-Json
-                    $Actual.filters.lastChanged.value -eq ([datetime]$LastChanged).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ')
+                    $Actual.filters.lastChanged.value -eq ([datetime]$LastChanged).ToUniversalTime()
                 }
 
             }
 
             Context "when the AllowNull parameter is supplied" {
 
-                BeforeEach {
+                BeforeEach {    
                     # act
-                    Get-BambooHrEmployee -ApiKey $ApiKey -Subdomain $Subdomain -LastChanged $LastChanged -AllowNull
+                    Get-BambooHrEmployee @Authentication -LastChanged $LastChanged -AllowNull
                 }
     
                 It "uses the correct Body" {
-
-                    Assert-MockCalled Invoke-WebRequest -ParameterFilter { 
+    
+                    Should -Invoke Invoke-WebRequest -ParameterFilter { 
                         $Actual = $Body | ConvertFrom-Json
-                        $Actual.filters.lastChanged.includeNul -eq 'yes'
+                        $Actual.filters.lastChanged.includeNull -eq 'yes'
                     }
     
                 }

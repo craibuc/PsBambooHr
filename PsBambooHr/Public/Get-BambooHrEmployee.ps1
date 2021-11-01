@@ -11,7 +11,7 @@ The API key.
 .PARAMETER Subdomain
 The subdomain used to access bamboohr. If you access bamboohr at https://mycompany.bamboohr.com, then the companyDomain is "mycompany"
 
-.PARAMETER Id
+.PARAMETER EmployeeId
 The employee's unique identifier (assigned by Bamboo HR). The employee ID of zero (0) is the employee ID associated with the API key.
 
 .PARAMETER LastChanged
@@ -22,6 +22,26 @@ Include only those employee records that have a null last-changed date (legacy).
 
 .PARAMETER Fields
 Array of field names to be retrieved.
+
+.EXAMPLE
+PS > Get-BambooHrEmployee -ApiKey '3ee9c09c-c4be-4e0b-9b08-d7df909ae001' -Subdomain 'companyDomain'
+
+Return all employee Ids.
+
+.EXAMPLE
+PS > Get-BambooHrEmployee -ApiKey '3ee9c09c-c4be-4e0b-9b08-d7df909ae001' -Subdomain 'companyDomain'  -Field 'firstName','lastName'
+
+Return all employee Ids, including first and last names.
+
+.EXAMPLE
+PS > Get-BambooHrEmployee -ApiKey '3ee9c09c-c4be-4e0b-9b08-d7df909ae001' -Subdomain 'companyDomain' -EmployeeId 1 -Field 'firstName','lastName'
+
+Return id, first, and last names for employee #1.
+
+.EXAMPLE
+PS > Get-BambooHrEmployee -ApiKey '3ee9c09c-c4be-4e0b-9b08-d7df909ae001' -Subdomain 'companyDomain' -LastChanged '10/01/2021' -Field 'firstName','lastName'
+
+Return id, first, and last names for all employee records that have changed since 01-OCT-2021.
 
 .LINK
 https://documentation.bamboohr.com/reference#get-employee
@@ -44,8 +64,7 @@ function Get-BambooHrEmployee {
         [string]$Subdomain,
 
         [Parameter(ParameterSetName='ById',Mandatory)]
-        [ValidatePattern('\d')] # numbers only
-        [string]$Id,
+        [System.Nullable[int]]$EmployeeId,
 
         [Parameter(ParameterSetName='LastChanged',Mandatory)]
         [datetime]$LastChanged,
@@ -53,7 +72,7 @@ function Get-BambooHrEmployee {
         [Parameter(ParameterSetName='LastChanged')]
         [switch]$AllowNull,
 
-        [string[]]$Fields #=@('firstName','lastName')
+        [string[]]$Fields
     )
     
     begin {
@@ -69,19 +88,24 @@ function Get-BambooHrEmployee {
     
     process {
 
+        Write-Debug "EmployeeId: $EmployeeId"
+        Write-Debug "LastChanged: $LastChanged"
+        Write-Debug "AllowNull: $AllowNull"
+        Write-Debug "Fields: $Fields"
+
         try {
 
             # specified employee
-            if ( $Id -ne '' ) # strings are empty not null in PS
+            if ( $EmployeeId -ne $null ) # strings are empty not null in PS
             {
                 if ($Fields)
                 {
                     $EncodedFields = [System.Web.HttpUtility]::UrlEncode( $Fields -join ',' )
-                    $Uri = "https://api.bamboohr.com/api/gateway.php/$Subdomain/v1/employees/$Id/?fields=$EncodedFields"
+                    $Uri = "https://api.bamboohr.com/api/gateway.php/$Subdomain/v1/employees/$EmployeeId/?fields=$EncodedFields"
                 }
                 else 
                 {
-                    $Uri = "https://api.bamboohr.com/api/gateway.php/$Subdomain/v1/employees/$Id/"
+                    $Uri = "https://api.bamboohr.com/api/gateway.php/$Subdomain/v1/employees/$EmployeeId/"
                 }
                 Write-Debug "Uri: $Uri"
 
@@ -92,7 +116,7 @@ function Get-BambooHrEmployee {
             else 
             {
                 $Body = @{
-                    fields = $fields
+                    fields = $fields ? $Fields : @()
                     filters=@{}
                 }
 
@@ -104,7 +128,7 @@ function Get-BambooHrEmployee {
 
                     if ($AllowNull)
                     {
-                        $Body.filters.lastChanged += @{ includeNul='yes' }
+                        $Body.filters.lastChanged += @{ includeNull='yes' }
                     }
                 }
                 
