@@ -2,4 +2,4 @@
 
 *psakefile.ps1
 
-*/Excluded/*
+**/Excluded/**
