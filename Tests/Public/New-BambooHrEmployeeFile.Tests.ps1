@@ -57,7 +57,7 @@ Describe "New-BambooHrEmployeeFile" -Tag 'unit' {
             # arrange
             $Authentication = @{
                 ApiKey = '2134d8d5-d1b4-4a1d-89ac-f44a96514bb5'
-                Subdomain = 'subdomain'    
+                Subdomain = 'subdomain'
             }
 
             $Path = Join-Path $TestDrive "MyFile.txt"
@@ -78,12 +78,34 @@ Describe "New-BambooHrEmployeeFile" -Tag 'unit' {
 
         }
 
-        BeforeEach {
-            # act
-            New-BambooHrEmployeeFile @Authentication @Splat
+        Context 'when an unsupported file format is encountered' {
+
+            BeforeAll {
+        
+                $Path = Join-Path $TestDrive "MyFile.xyz"
+                New-Item -ItemType File -Path $Path
+
+                $Splat = @{
+                    EmployeeId = 1
+                    Path = $Path
+                    CategoryId = 28
+                    Share = $true
+                }
+
+            }
+
+            It 'throws an exception' {
+                { New-BambooHrEmployeeFile @Authentication @Splat } | Should -Throw 
+            }
+
         }
 
         Context "Request" {
+
+            BeforeEach {
+                # act
+                New-BambooHrEmployeeFile @Authentication @Splat
+            }
 
             It "uses the correct Uri" {
                 # assert
@@ -92,7 +114,7 @@ Describe "New-BambooHrEmployeeFile" -Tag 'unit' {
                 }
             }
     
-            It "uses the correct Method" {    
+            It "uses the correct Method" {
                 # assert
                 Assert-MockCalled Invoke-WebRequest -ParameterFilter { $Method -eq 'Post' }
             }

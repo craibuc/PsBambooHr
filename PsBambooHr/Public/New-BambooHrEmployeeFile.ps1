@@ -53,6 +53,8 @@ function New-BambooHrEmployeeFile
             Accept = 'application/json'
         }
 
+        $ValidExtensions = 'BMP','CSV','DOC','DOCX','GIF','JPG','JPEG','PDF','PNG','RTF','TIF','TIFF','TXT','XLS','XLSX','ZIP'
+
         $Password = ConvertTo-SecureString 'Password' -AsPlainText -Force
         $Credentials = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $ApiKey, $Password
     }
@@ -104,6 +106,11 @@ function New-BambooHrEmployeeFile
                 # Invoke-RestMethod -Uri $Uri -Method Post -ContentType "multipart/form-data; boundary=`"$boundary`"" -Body $bodyLines
 
         $Item = Get-Item -Path $Path
+
+        if ( $Item.Extension -notin '.bmp','.csv','.doc','.docx','.gif','.jpg','.jpeg','.pdf','.png','.rtf','.tif','.tiff','.txt','.xls','.xlsx','.zip' )
+        {
+            throw [System.IO.FileFormatException]::new(("{0} is not a supported file format." -f $Item.Extension), $Path)
+        }
 
         $Form = @{
             file = $Item
