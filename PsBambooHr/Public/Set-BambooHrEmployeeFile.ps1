@@ -58,9 +58,6 @@ function Set-BambooHrEmployeeFile
     )
 
     begin {
-        $Headers = @{
-            Accept = 'application/json'
-        }
 
         $Password = ConvertTo-SecureString 'Password' -AsPlainText -Force
         $Credentials = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $ApiKey, $Password
@@ -71,16 +68,19 @@ function Set-BambooHrEmployeeFile
     process {
 
         $Body = @{
-            name = $fileName
-            categoryId = $CategoryId.ToString()
             shareWithEmployee = $Share ? 'yes' : 'no'
         }
+
+        if ( ![string]::IsNullOrEmpty($fileName) ) { $Body['name']=$fileName }
+        if ( $categoryId -ne 0 ) { $Body['categoryId']=$categoryId }
+
         Write-Debug ($Body | ConvertTo-Json)
 
         try
         {
-            $Response = Invoke-WebRequest -Uri $Uri -Method Post -Body ($Body | ConvertTo-Json) -Headers $Headers -Credential $Credentials -UseBasicParsing
-            $Response
+            Invoke-WebRequest -Uri $Uri -Method Post -Body ($Body | ConvertTo-Json) -ContentType 'application/json' -Credential $Credentials -UseBasicParsing | Out-Null
+            # $Response = Invoke-WebRequest -Uri $Uri -Method Post -Body ($Body | ConvertTo-Json) -ContentType 'application/json' -Credential $Credentials -UseBasicParsing
+            # $Response
         }
         catch
         {

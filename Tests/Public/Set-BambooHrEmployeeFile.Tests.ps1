@@ -96,9 +96,9 @@ Describe "Set-BambooHrEmployeeFile" -Tag 'unit' {
                 Assert-MockCalled Invoke-WebRequest -ParameterFilter { $Method -eq 'Post' }
             }
         
-            It "uses the correct Accept" {
+            It "uses the correct ContentType" {
                 # assert
-                Assert-MockCalled Invoke-WebRequest -ParameterFilter { $Headers.Accept -eq 'application/json' }
+                Assert-MockCalled Invoke-WebRequest -ParameterFilter { $ContentType -eq 'application/json' }
             }
     
             It "uses the correct Credential" {
@@ -113,15 +113,44 @@ Describe "Set-BambooHrEmployeeFile" -Tag 'unit' {
                 }
             }
 
-            It "uses the correct Form" {
-                # assert
-                Assert-MockCalled Invoke-WebRequest -ParameterFilter {
-                    $Actual = $Body | ConvertFrom-Json
+            Context "Body" {
+                
+                Context "when a FileName is supplied" {
 
-                    $Actual.name -eq $Splat.FileName -and
-                    $Actual.categoryId -eq $Splat.CategoryId -and
-                    $Actual.shareWithEmployee -eq ($Splat.Share ? 'yes' : 'no')
+                    It "adds the name to the body" {
+                        # assert
+                        Assert-MockCalled Invoke-WebRequest -ParameterFilter {
+                            $Actual = $Body | ConvertFrom-Json
+                            $Actual.name -eq $Splat.FileName
+                        }
+                    }    
+    
                 }
+
+                Context "when a CategoryId is supplied" {
+
+                    It "adds categoryId to the body" {
+                        # assert
+                        Assert-MockCalled Invoke-WebRequest -ParameterFilter {
+                            $Actual = $Body | ConvertFrom-Json
+                            $Actual.categoryId -eq $Splat.CategoryId
+                        }
+                    }
+
+                }
+
+                Context "when a Share is supplied" {
+
+                    It "adds shareWithEmployee to the body" {
+                        # assert
+                        Assert-MockCalled Invoke-WebRequest -ParameterFilter {
+                            $Actual = $Body | ConvertFrom-Json
+                            $Actual.shareWithEmployee -eq ($Share ? 'yes' : 'no')
+                        }
+                    }
+
+                }
+
             }
 
         } # /Context
