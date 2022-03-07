@@ -67,7 +67,7 @@ function Get-BambooHrEmployeeTableData {
             if ( $_.Exception.Response.StatusCode -eq 'NotFound' ) 
             {
                 $Message = "Table '$TableName' was not found for Employee #$EmployeeId"
-                Write-Warning $Message
+                Microsoft.PowerShell.Utility\Write-Warning $Message
             }
             else
             {
