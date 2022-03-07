@@ -54,11 +54,6 @@ function New-BambooHrEmployeeTableData {
     )
 
     begin {
-        # headers
-        $Headers = @{
-            Accept = 'application/json'
-        }
-
         # uri
         $Uri = "https://api.bamboohr.com/api/gateway.php/$Subdomain/v1/employees/$EmployeeId/tables/$TableName"
         Write-Debug "Uri: $Uri"
@@ -76,10 +71,9 @@ function New-BambooHrEmployeeTableData {
 
             $Body = $Data | ConvertTo-Json
 
-            if ( $PSCmdlet.ShouldProcess('Table','Post') )
+            if ( $PSCmdlet.ShouldProcess($TableName,'Post') )
             {
-                $Response = Invoke-WebRequest -Uri $Uri -Method Post -Body $Body -Headers $Headers -ContentType 'application/json' -Credential $Credentials -UseBasicParsing -Verbose:$false
-                # $Response.Content | ConvertFrom-Json    
+                Invoke-WebRequest -Uri $Uri -Method Post -Body $Body -ContentType 'application/json' -Credential $Credentials -UseBasicParsing -Verbose:$false
             }
         }
 
@@ -87,7 +81,7 @@ function New-BambooHrEmployeeTableData {
             if ( $_.Exception.Response.StatusCode -eq 'NotFound' ) 
             {
                 $Message = "Table '$TableName' was not found for Employee #$EmployeeId"
-                Write-Warning $Message
+                Microsoft.PowerShell.Utility\Write-Warning $Message
             }
             else
             {
