@@ -406,7 +406,7 @@ function Set-BambooHrEmployee {
  
         try
         {
-            $Response = Invoke-WebRequest -Uri $Uri -Method Post -Body ($Body | ConvertTo-Json) -Headers $Headers -ContentType "application/json" -Credential $Credentials -UseBasicParsing
+            Invoke-WebRequest -Uri $Uri -Method Post -Body ($Body | ConvertTo-Json) -Headers $Headers -ContentType "application/json" -Credential $Credentials -UseBasicParsing  | Out-Null
         }
         catch
         {

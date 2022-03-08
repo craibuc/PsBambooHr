@@ -79,8 +79,6 @@ function Set-BambooHrEmployeeFile
         try
         {
             Invoke-WebRequest -Uri $Uri -Method Post -Body ($Body | ConvertTo-Json) -ContentType 'application/json' -Credential $Credentials -UseBasicParsing | Out-Null
-            # $Response = Invoke-WebRequest -Uri $Uri -Method Post -Body ($Body | ConvertTo-Json) -ContentType 'application/json' -Credential $Credentials -UseBasicParsing
-            # $Response
         }
         catch
         {

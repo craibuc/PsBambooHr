@@ -73,7 +73,7 @@ function New-BambooHrEmployeeTableData {
 
             if ( $PSCmdlet.ShouldProcess($TableName,'Post') )
             {
-                Invoke-WebRequest -Uri $Uri -Method Post -Body $Body -ContentType 'application/json' -Credential $Credentials -UseBasicParsing -Verbose:$false
+                Invoke-WebRequest -Uri $Uri -Method Post -Body $Body -ContentType 'application/json' -Credential $Credentials -UseBasicParsing -Verbose:$false | Out-Null
             }
         }
 
