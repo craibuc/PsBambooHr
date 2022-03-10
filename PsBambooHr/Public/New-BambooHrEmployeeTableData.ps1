@@ -49,7 +49,7 @@ function New-BambooHrEmployeeTableData {
         [Parameter(Mandatory)]
         [string]$TableName,
 
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory,ValueFromPipeline)]
         [pscustomobject]$Data
     )
 
@@ -71,7 +71,7 @@ function New-BambooHrEmployeeTableData {
 
             $Body = $Data | ConvertTo-Json
 
-            if ( $PSCmdlet.ShouldProcess($TableName,'Post') )
+            if ( $PSCmdlet.ShouldProcess("POST /employees/$EmployeeId/tables/$TableName",'Invoke-WebRequest') )
             {
                 Invoke-WebRequest -Uri $Uri -Method Post -Body $Body -ContentType 'application/json' -Credential $Credentials -UseBasicParsing -Verbose:$false | Out-Null
             }
