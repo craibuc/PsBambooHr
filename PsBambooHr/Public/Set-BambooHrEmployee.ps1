@@ -194,7 +194,7 @@ https://documentation.bamboohr.com/reference#update-employee
 #>
 
 function Set-BambooHrEmployee {
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     param (
         [Parameter(Mandatory)]
         [string]$ApiKey,
@@ -203,180 +203,183 @@ function Set-BambooHrEmployee {
         [string]$Subdomain,
 
         [Parameter(Mandatory)]
-        [int]$id,
+        [int]$EmployeeId,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipeline,Mandatory,ParameterSetName='ByData')]
+        [pscustomobject]$Data,
+
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [string]$address1,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [string]$address2,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [string]$bestEmail,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [decimal]$bonusAmount,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [string]$bonusComment,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [datetime]$bonusDate,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [string]$bonusReason,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [string]$city,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [decimal]$commissionAmount,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [string]$commissionComment,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [datetime]$commissionDate,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [string]$country,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [datetime]$dateOfBirth,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [string]$department,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [string]$division,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [string]$eeo,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [string]$employeeNumber,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [string]$ethnicity,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [ValidateSet('Exempt','Non-exempt')]
         [string]$exempt,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [string]$firstName,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [ValidateSet('Male','Female')]
         [string]$gender,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [datetime]$hireDate,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [datetime]$originalHireDate,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [string]$homeEmail,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [string]$homePhone,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [string]$jobTitle,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [string]$lastName,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [string]$location,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [string]$maritalStatus,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [string]$middleName,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [string]$mobilePhone,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [string]$nationalId,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [string]$nationality,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [string]$nin,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [string]$payChangeReason,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [string]$payGroup,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [int]$payGroupId,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [decimal]$payRate,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [datetime]$payRateEffectiveDate,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [string]$payType,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [string]$payPer,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [string]$paidPer,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [string]$paySchedule,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [int]$payScheduleId,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [string]$payFrequency,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [bool]$includeInPayroll,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [bool]$timeTrackingEnabled,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [string]$preferredName,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [string]$ssn,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [string]$sin,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [int]$standardHoursPerWeek,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [string]$state,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [ValidateSet('Active','Inactive')]
         [string]$status,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [string]$workEmail,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [string]$workPhone,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [string]$workPhonePlusExtension,
 
-        [Parameter(ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName='ByProperty')]
         [string]$zipcode
     )
     
@@ -391,22 +394,33 @@ function Set-BambooHrEmployee {
     
     process {
         # uri
-        $Uri = "https://api.bamboohr.com/api/gateway.php/$Subdomain/v1/employees/$id"
+        $Uri = "https://api.bamboohr.com/api/gateway.php/$Subdomain/v1/employees/$EmployeeId"
         Write-Debug "Uri: $Uri"
 
-        # make a copy of Dictionary
-        $Body = @{} + $PSBoundParameters
+        if ($PSCmdlet.ParameterSetName -eq 'ByProperty')
+        {
+            # make a copy of Dictionary
+            $Body = @{} + $PSBoundParameters
 
-        # remove the information
-        $Body.Remove('ApiKey')
-        $Body.Remove('Subdomain')
-        $Body.Remove('id')
+            # remove the information
+            $Body.Remove('ApiKey')
+            $Body.Remove('Subdomain')
+            $Body.Remove('EmployeeId') # supplying the id will cause the POST to fail
+        }
+        else
+        {
+            $Data.Remove('id') # supplying the id will cause the POST to fail
+            $Body = $Data
+        }
 
         Write-Debug ($Body | ConvertTo-Json)
  
         try
         {
-            Invoke-WebRequest -Uri $Uri -Method Post -Body ($Body | ConvertTo-Json) -Headers $Headers -ContentType "application/json" -Credential $Credentials -UseBasicParsing  | Out-Null
+            if ($pscmdlet.ShouldProcess("POST /employees/$EmployeeId", "Invoke-WebRequest"))
+            {
+                Invoke-WebRequest -Uri $Uri -Method Post -Body ($Body | ConvertTo-Json) -Headers $Headers -ContentType "application/json" -Credential $Credentials -UseBasicParsing  | Out-Null
+            }
         }
         catch
         {
