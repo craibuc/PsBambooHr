@@ -12,7 +12,7 @@
 RootModule = './PsBambooHr.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.5.0'
+ModuleVersion = '0.6.0'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -73,7 +73,7 @@ FunctionsToExport = @(
     'Get-BambooHrEmployee','New-BambooHrEmployee','Set-BambooHrEmployee'
     'Get-BambooHrEmployeeFile','New-BambooHrEmployeeFile','Remove-BambooHrEmployeeFile','Set-BambooHrEmployeeFile'
     'New-BambooHrEmployeeFileCategory',
-    'Get-BambooHrEmployeeTableData','New-BambooHrEmployeeTableData'
+    'Get-BambooHrEmployeeTableRow','New-BambooHrEmployeeTableRow','Set-BambooHrEmployeeTableRow'
     'Get-BambooHrField'
     'Get-BambooHrList'
     'Get-BambooHrTable'
