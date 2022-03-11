@@ -9,19 +9,19 @@ BeforeAll {
     # /PsBambooHr/Tests/Fixtures/
     $FixturesDirectory = Join-Path $ProjectDirectory "/Tests/Fixtures/"
 
-    # New-BambooHrEmployeeTableData.ps1
+    # New-BambooHrEmployeeTableRow.ps1
     $SUT = (Split-Path -Leaf $PSCommandPath) -replace '\.Tests\.', '.'
 
     . (Join-Path $PublicPath $SUT)
 
 }
 
-Describe "New-BambooHrEmployeeTableData" -Tag 'unit' {
+Describe "New-BambooHrEmployeeTableRow" -Tag 'unit' {
 
     Context "Parameter validation" {
 
         BeforeAll {
-            $Command = Get-Command 'New-BambooHrEmployeeTableData'
+            $Command = Get-Command 'New-BambooHrEmployeeTableRow'
         } 
 
         $Parameters = @(
@@ -92,7 +92,7 @@ Describe "New-BambooHrEmployeeTableData" -Tag 'unit' {
 
             BeforeEach {
                 # act
-                New-BambooHrEmployeeTableData @Authentication @Splat
+                New-BambooHrEmployeeTableRow @Authentication @Splat
             }
     
             It "uses the correct Uri" {
@@ -166,7 +166,7 @@ Describe "New-BambooHrEmployeeTableData" -Tag 'unit' {
                 }
 
                 # act
-                New-BambooHrEmployeeTableData @Authentication @Splat
+                New-BambooHrEmployeeTableRow @Authentication @Splat
 
                 # assert
                 Assert-MockCalled Write-Warning -ParameterFilter { 
