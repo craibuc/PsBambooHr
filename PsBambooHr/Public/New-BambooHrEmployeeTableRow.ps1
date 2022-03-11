@@ -21,19 +21,19 @@ The name of the table.
 Data to be add to the table.
 
 .EXAMPLE
-PS> New-BambooHrEmployeeTableData -ApiKey '3ee9c09c-c4be-4e0b-9b08-d7df909ae001' -Subdomain 'companyDomain' -EmployeeId 1 -TableName 'MyTable' -Data [pscustomobject]@{Key='Value'}
+PS> New-BambooHrEmployeeTableRow -ApiKey '3ee9c09c-c4be-4e0b-9b08-d7df909ae001' -Subdomain 'companyDomain' -EmployeeId 1 -TableName 'MyTable' -Data [pscustomobject]@{Key='Value'}
 
 .LINK
 Get-BambooHrTable
 
 .LINK
-Get-BambooHrEmployeeTableData
+Get-BambooHrEmployeeTableRow
 
 .LINK
 https://documentation.bamboohr.com/reference#add-employee-table-row-v1-1
 #>
 
-function New-BambooHrEmployeeTableData {
+function New-BambooHrEmployeeTableRow {
 
     [CmdletBinding(SupportsShouldProcess)]
     param (
