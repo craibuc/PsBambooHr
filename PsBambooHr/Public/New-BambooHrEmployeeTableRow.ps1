@@ -20,6 +20,9 @@ The name of the table.
 .PARAMETER Data
 Data to be add to the table.
 
+.PARAMETER PassThru
+When enabled, it returns the data.
+
 .EXAMPLE
 PS> New-BambooHrEmployeeTableRow -ApiKey '3ee9c09c-c4be-4e0b-9b08-d7df909ae001' -Subdomain 'companyDomain' -EmployeeId 1 -TableName 'MyTable' -Data [pscustomobject]@{Key='Value'}
 
@@ -50,7 +53,9 @@ function New-BambooHrEmployeeTableRow {
         [string]$TableName,
 
         [Parameter(Mandatory,ValueFromPipeline)]
-        [pscustomobject]$Data
+        [pscustomobject]$Data,
+
+        [switch]$PassThru
     )
 
     begin {
@@ -70,11 +75,15 @@ function New-BambooHrEmployeeTableRow {
         try {
 
             $Body = $Data | ConvertTo-Json
+            Write-Debug $Body
 
             if ( $PSCmdlet.ShouldProcess("POST /employees/$EmployeeId/tables/$TableName",'Invoke-WebRequest') )
             {
                 Invoke-WebRequest -Uri $Uri -Method Post -Body $Body -ContentType 'application/json' -Credential $Credentials -UseBasicParsing -Verbose:$false | Out-Null
             }
+
+            $PassThru.IsPresent ? $Data : $null
+
         }
 
         catch [Microsoft.PowerShell.Commands.HttpResponseException] {

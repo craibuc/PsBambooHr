@@ -33,7 +33,7 @@ https://documentation.bamboohr.com/reference#update-employee-file-1
 #>
 function Set-BambooHrEmployeeFile
 {
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     param (
         [Parameter(Mandatory)]
         [string]$ApiKey,
@@ -78,7 +78,10 @@ function Set-BambooHrEmployeeFile
 
         try
         {
-            Invoke-WebRequest -Uri $Uri -Method Post -Body ($Body | ConvertTo-Json) -ContentType 'application/json' -Credential $Credentials -UseBasicParsing | Out-Null
+            if ( $PSCmdlet.ShouldProcess("POST /employees/$EmployeeId/tables/$TableName",'Invoke-WebRequest') )
+            {
+                Invoke-WebRequest -Uri $Uri -Method Post -Body ($Body | ConvertTo-Json) -ContentType 'application/json' -Credential $Credentials -UseBasicParsing | Out-Null
+            }
         }
         catch
         {
