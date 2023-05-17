@@ -12,7 +12,7 @@
 RootModule = './PsBambooHr.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.6.1'
+ModuleVersion = '0.8.0'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -71,8 +71,9 @@ Description = 'PowerShell module that wraps the BambooHR API.'
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
 FunctionsToExport = @(
     'Get-BambooHrEmployee','New-BambooHrEmployee','Set-BambooHrEmployee'
-    'Get-BambooHrEmployeeFile','New-BambooHrEmployeeFile','Remove-BambooHrEmployeeFile','Set-BambooHrEmployeeFile'
+    'Get-BambooHrEmployeeFile','New-BambooHrEmployeeFile','Remove-BambooHrEmployeeFile','Set-BambooHrEmployeeFile','Get-BambooHrEmployeeFileContent','Save-BambooHrEmployeeFile'
     'New-BambooHrEmployeeFileCategory',
+    'Get-BambooHrEmployeePhoto',
     'Get-BambooHrEmployeeTableRow','New-BambooHrEmployeeTableRow','Set-BambooHrEmployeeTableRow'
     'Get-BambooHrField'
     'Get-BambooHrList'
