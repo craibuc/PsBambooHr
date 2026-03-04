@@ -61,6 +61,8 @@ function Get-BambooHrEmployeeFileContent
             #     Default {}
             # }
             # if ($Response -ne 201) {}
+
+            # Content-Disposition       {attachment; filename="NHP - 3 Authorization Form for Safety Performance Investigation.pdf"}
             $Response.Content #| ConvertFrom-Json
         }
         catch {
