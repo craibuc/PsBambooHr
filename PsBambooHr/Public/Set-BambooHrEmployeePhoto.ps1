@@ -46,7 +46,7 @@ function Set-BambooHrEmployeePhoto {
         $Password = ConvertTo-SecureString 'Password' -AsPlainText -Force
         $Credentials = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $ApiKey, $Password
     }
-    
+
     process {
         
         if ( (Test-Path -Path $Path) -eq $false )
@@ -59,6 +59,12 @@ function Set-BambooHrEmployeePhoto {
         if ( $Item.Extension -notin '.gif','.jpg','.jpeg','.png' )
         {
             throw [System.IO.FileFormatException]::new(("{0} is not a supported file format." -f $Item.Extension), $Path)
+        }
+
+        if ( $Item.Size -gt 20mb )
+        {
+            $Size = [math]::Round($Item.Size / 1MB, 1)
+            throw [System.ArgumentException]::new(("File's size ({0} MB) exceeds the maximum allowed size of 20 MB." -f $Size), $Item.Name)
         }
 
         $Form = @{
